@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOCTYPE html> 
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -24,7 +24,33 @@
         <button onclick="iniciarJuego('juego')">Modo Juego</button>
         <button onclick="iniciarJuego('libre')">Modo Libre</button>
         <button onclick="mostrarInstrucciones()">Instrucciones</button>
-        <button onclick="window.location.href='https://sites.google.com/pcpuma.acatlan.unam.mx/proyecto-final/p%C3%A1gina-principal?authuser=0'">Recursos</button>
+        <button onclick="mostrarRecursos()">Recursos</button>
+
+        <div id="instrucciones" style="display: none; margin-top: 20px;">
+            <h2>Instrucciones</h2>
+            <p>
+                A continuación se detallan las instrucciones del juego:
+            </p>
+            <ul>
+                <li><strong>Modo Juego:</strong> Inicia desde el Nivel 1 y avanza hasta el Nivel 4. Tienes un número limitado de errores por nivel. Si excedes los errores permitidos, retrocedes un nivel.</li>
+                <li><strong>Modo Libre:</strong> Puedes seleccionar cualquier nivel sin restricciones y con intentos infinitos.</li>
+                <li>Arrastra cada elemento sobre su pareja correspondiente.</li>
+                <li>Si emparejas correctamente, ambos elementos desaparecerán.</li>
+                <li>Empareja todos los elementos para completar el nivel.</li>
+            </ul>
+            <button onclick="ocultarInstrucciones()">Cerrar Instrucciones</button>
+        </div>
+
+        <div id="recursos" style="display: none; margin-top: 20px;">
+            <h2>Recursos</h2>
+            <p>
+                Puedes acceder a los recursos en el siguiente enlace:
+                <a href="https://sites.google.com/pcpuma.acatlan.unam.mx/proyecto-final/p%C3%A1gina-principal?authuser=0" target="_blank">
+                    Recursos del Proyecto
+                </a>
+            </p>
+            <button onclick="ocultarRecursos()">Cerrar Recursos</button>
+        </div>
     </div>
 
     <div id="seleccion-nivel" style="display: none;">

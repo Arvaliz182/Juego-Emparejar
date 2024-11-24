@@ -3,6 +3,7 @@ let modoJuego = false; // Variable para controlar si está en Modo Juego
 let erroresPermitidos;
 let erroresActuales = 0;
 
+// Arrays de pares para cada nivel
 let paresNivel1 = [
     // Pares del nivel 1
     {
@@ -86,6 +87,7 @@ let paresNivel1 = [
         definicion: "Propiedad de una función que puede ser derivada en un punto."
     }
 ];
+
 let paresNivel2 = [
     // Nivel 2: Funciones y sus gráficas
     {
@@ -221,11 +223,13 @@ let paresNivel4 = [
         serieTaylor: "\\( x - \\dfrac{x^{3}}{3} + \\dfrac{x^{5}}{5} - \\dfrac{x^{7}}{7} + \\cdots \\), \\( |x| \\leq 1 \\)"
     }
 ];
+
 let totalPares;
 let paresRestantes;
 let pares;
 let elementoArrastrado;
 
+// Función para iniciar el juego
 function iniciarJuego(modo) {
     modoJuego = (modo === 'juego');
     document.getElementById('inicio').style.display = 'none';
@@ -238,6 +242,7 @@ function iniciarJuego(modo) {
     }
 }
 
+// Función para iniciar un nivel
 function iniciarNivel(nivel) {
     nivelActual = nivel;
     document.getElementById('seleccion-nivel').style.display = 'none';
@@ -270,15 +275,17 @@ function iniciarNivel(nivel) {
     actualizarContadorErrores();
 }
 
+// Función para actualizar el contador de errores
 function actualizarContadorErrores() {
     const contadorErrores = document.getElementById('contador-errores');
     if (erroresPermitidos !== Infinity) {
-        contadorErrores.textContent = `Intento: ${erroresActuales}/${erroresPermitidos}`;
+        contadorErrores.textContent = `Errores: ${erroresActuales}/${erroresPermitidos}`;
     } else {
         contadorErrores.textContent = '';
     }
 }
 
+// Función para regresar al inicio
 function regresarInicio() {
     document.getElementById('juego').style.display = 'none';
     document.getElementById('inicio').style.display = 'block';
@@ -286,30 +293,33 @@ function regresarInicio() {
     actualizarContadorErrores();
 }
 
+// Función para reiniciar el nivel actual
 function reiniciarNivel() {
     iniciarNivel(nivelActual);
 }
 
+// Funciones para iniciar cada nivel
 function iniciarJuegoNivel1() {
-    // Lógica del Nivel 1
+    // Lógica del Nivel 1: Términos y Definiciones
     prepararNivel('termino', 'definicion', 'Términos', 'Definiciones');
 }
 
 function iniciarJuegoNivel2() {
-    // Lógica del Nivel 2
+    // Lógica del Nivel 2: Funciones y Gráficas
     prepararNivel('funcion', 'grafica', 'Funciones', 'Gráficas');
 }
 
 function iniciarJuegoNivel3() {
-    // Lógica del Nivel 3
+    // Lógica del Nivel 3: Funciones y Puntos Críticos
     prepararNivel('funcion', 'puntosCriticos', 'Funciones', 'Puntos Críticos');
 }
 
 function iniciarJuegoNivel4() {
-    // Lógica del Nivel 4
+    // Lógica del Nivel 4: Funciones y Series de Taylor
     prepararNivel('funcion', 'serieTaylor', 'Funciones', 'Series de Taylor');
 }
 
+// Función para preparar el nivel
 function prepararNivel(tipoIzquierdo, tipoDerecho, tituloIzquierdo, tituloDerecho) {
     mezclarArray(pares);
 
@@ -342,7 +352,7 @@ function prepararNivel(tipoIzquierdo, tipoDerecho, tituloIzquierdo, tituloDerech
         div.draggable = true;
         div.innerHTML = elemento;
         div.dataset.tipo = tipoIzquierdo;
-        div.dataset.id = elemento.trim();
+        div.dataset.id = obtenerIdDesdeContenido(tipoIzquierdo, elemento);
         div.addEventListener('dragstart', dragStart);
         contenedorIzquierdo.appendChild(div);
     });
@@ -361,7 +371,7 @@ function prepararNivel(tipoIzquierdo, tipoDerecho, tituloIzquierdo, tituloDerech
             div.innerHTML = elemento;
         }
         div.dataset.tipo = tipoDerecho;
-        div.dataset.id = elemento.trim();
+        div.dataset.id = obtenerIdDesdeContenido(tipoDerecho, elemento);
         div.addEventListener('dragstart', dragStart);
         contenedorDerecho.appendChild(div);
     });
@@ -372,21 +382,38 @@ function prepararNivel(tipoIzquierdo, tipoDerecho, tituloIzquierdo, tituloDerech
     contenedorIzquierdo.addEventListener('drop', drop);
     contenedorDerecho.addEventListener('drop', drop);
 
-    MathJax.typesetPromise();
+    // Renderizar las expresiones matemáticas con MathJax
+    if (window.MathJax) {
+        MathJax.typesetPromise();
+    }
 }
 
+// Función para obtener un identificador único desde el contenido
+function obtenerIdDesdeContenido(tipo, contenido) {
+    if (tipo === 'grafica') {
+        return contenido; // El nombre del archivo de la gráfica
+    } else {
+        // Para términos, definiciones, funciones, puntos críticos, serieTaylor
+        // Podemos usar el contenido sin espacios y sin caracteres especiales
+        return contenido.replace(/\\\(.+?\\\)/g, '').replace(/\s+/g, '').replace(/[^\w]/g, '').toUpperCase();
+    }
+}
+
+// Función para iniciar el arrastre
 function dragStart(e) {
     elementoArrastrado = e.target;
-    e.dataTransfer.setData('text/plain', e.target.innerHTML);
+    e.dataTransfer.setData('text/plain', e.target.dataset.id);
     setTimeout(() => {
         e.target.classList.add('dragging');
     }, 0);
 }
 
+// Función para permitir el arrastre sobre el contenedor
 function dragOver(e) {
     e.preventDefault();
 }
 
+// Función para manejar la caída del elemento
 function drop(e) {
     e.preventDefault();
     const elementoDestino = e.target.closest('.elemento');
@@ -405,19 +432,19 @@ function drop(e) {
             if (nivelActual === 1) {
                 const termino = tipoOrigen === 'termino' ? idOrigen : idDestino;
                 const definicion = tipoOrigen === 'definicion' ? idOrigen : idDestino;
-                parCorrecto = pares.find(par => par.termino.trim() === termino && par.definicion.trim() === definicion);
+                parCorrecto = pares.find(par => obtenerIdDesdeContenido('termino', par.termino) === termino && obtenerIdDesdeContenido('definicion', par.definicion) === definicion);
             } else if (nivelActual === 2) {
                 const funcion = tipoOrigen === 'funcion' ? idOrigen : idDestino;
                 const grafica = tipoOrigen === 'grafica' ? idOrigen : idDestino;
-                parCorrecto = pares.find(par => par.funcion.trim() === funcion && par.grafica.trim() === grafica);
+                parCorrecto = pares.find(par => obtenerIdDesdeContenido('funcion', par.funcion) === funcion && par.grafica === grafica);
             } else if (nivelActual === 3) {
                 const funcion = tipoOrigen === 'funcion' ? idOrigen : idDestino;
                 const puntosCriticos = tipoOrigen === 'puntosCriticos' ? idOrigen : idDestino;
-                parCorrecto = pares.find(par => par.funcion.trim() === funcion && par.puntosCriticos.trim() === puntosCriticos);
+                parCorrecto = pares.find(par => obtenerIdDesdeContenido('funcion', par.funcion) === funcion && obtenerIdDesdeContenido('puntosCriticos', par.puntosCriticos) === puntosCriticos);
             } else if (nivelActual === 4) {
                 const funcion = tipoOrigen === 'funcion' ? idOrigen : idDestino;
                 const serieTaylor = tipoOrigen === 'serieTaylor' ? idOrigen : idDestino;
-                parCorrecto = pares.find(par => par.funcion.trim() === funcion && par.serieTaylor.trim() === serieTaylor);
+                parCorrecto = pares.find(par => obtenerIdDesdeContenido('funcion', par.funcion) === funcion && obtenerIdDesdeContenido('serieTaylor', par.serieTaylor) === serieTaylor);
             }
 
             if (parCorrecto) {
@@ -474,27 +501,48 @@ function drop(e) {
                 }
             }
         }
-    }
 
-    if (elementoArrastrado) {
-        elementoArrastrado.classList.remove('dragging');
-        elementoArrastrado = null;
+        if (elementoArrastrado) {
+            elementoArrastrado.classList.remove('dragging');
+            elementoArrastrado = null;
+        }
     }
 }
-
+// Función para mostrar las instrucciones
 function mostrarInstrucciones() {
-    alert("Instrucciones:\n- Modo Juego: Inicia desde el Nivel 1 y avanza hasta el Nivel 4. Tienes un número limitado de errores por nivel. Si excedes los errores permitidos, retrocedes un nivel.\n- Modo Libre: Puedes seleccionar cualquier nivel sin restricciones y con intentos infinitos.\n- Arrastra cada elemento sobre su pareja correspondiente.\n- Si emparejas correctamente, ambos elementos desaparecerán.\n- Empareja todos los elementos para completar el nivel.");
+    document.getElementById('instrucciones').style.display = 'block';
 }
 
+// Función para ocultar las instrucciones
+function ocultarInstrucciones() {
+    document.getElementById('instrucciones').style.display = 'none';
+}
+
+// Función para mostrar los recursos
+function mostrarRecursos() {
+    document.getElementById('recursos').style.display = 'block';
+}
+
+// Función para ocultar los recursos
+function ocultarRecursos() {
+    document.getElementById('recursos').style.display = 'none';
+}
+
+// Función para alternar el tamaño de la imagen de la gráfica
 function toggleImagenSize(e) {
     const elemento = e.currentTarget;
     elemento.classList.toggle('expanded');
 }
 
-// Función para mezclar el arreglo
+// Función para mezclar un array usando Fisher-Yates
 function mezclarArray(array) {
     for (let i = array.length - 1; i > 0; i--) {
-        let j = Math.floor(Math.random() * (i + 1));
+        let j = getRandomInt(0, i);
         [array[i], array[j]] = [array[j], array[i]];
     }
+}
+
+// Función para obtener un número aleatorio entre min y max (inclusive)
+function getRandomInt(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
 }

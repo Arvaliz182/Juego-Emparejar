@@ -38,14 +38,14 @@ button {
 .elemento img {
     max-width: 100%;
     height: auto;
-    width: 200px; /* Ancho inicial de la imagen */
-    height: 200px; /* Alto inicial de la imagen */
-    object-fit: contain; /* Ajusta la imagen dentro del contenedor */
+    width: 200px;
+    height: 200px;
+    object-fit: contain;
 }
 
 .elemento.expanded img {
-    width: auto; /* Ancho original de la imagen */
-    height: auto; /* Alto original de la imagen */
+    width: auto;
+    height: auto;
 }
 
 .elemento.dragging {
@@ -86,4 +86,32 @@ h2 {
     font-size: 18px;
     margin-bottom: 20px;
     color: #e53935;
+}
+
+#instrucciones, #recursos {
+    margin-top: 20px;
+    text-align: center;
+}
+
+#instrucciones h2, #recursos h2 {
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+#instrucciones p, #recursos p {
+    font-size: 16px;
+    margin-bottom: 20px;
+}
+
+#instrucciones ul {
+    list-style-type: disc;
+    text-align: left;
+    display: inline-block;
+    margin-left: 20px;
+    text-align: left;
+}
+
+#instrucciones button, #recursos button {
+    padding: 8px 12px;
+    font-size: 14px;
 }
